@@ -1,10 +1,10 @@
 using TMPro;
-using UnityEditor.Animations;
 using UnityEngine;
-using System;
 
 public class AttackChaining : MonoBehaviour
 {
+    public AttackMeter attackMeter;
+
     public TMP_Text displayText;
 
     public float attackDelay = 0.5f;
@@ -15,7 +15,6 @@ public class AttackChaining : MonoBehaviour
     public int _chainCounter = 0;
     private const int _maxChain = 5;
     [SerializeField] private float _chainTimer = 0.0f;
-
 
     private void Update()
     {
@@ -38,8 +37,12 @@ public class AttackChaining : MonoBehaviour
             {
                 _chainTimer = 0.0f;
                 _chainCounter = 0;
-                displayText.text = "Idle";
             }
+        }
+
+        if(_chainCounter == 0 && attackReady)
+        {
+            displayText.text = "Idle";
         }
 
         if(Input.GetKeyDown(KeyCode.R))
@@ -57,12 +60,12 @@ public class AttackChaining : MonoBehaviour
     {
         if(!attackReady) { return; }
 
+        // When the last attack of the chain is reached, reset the counter and timer 
         if(_chainCounter == _maxChain)
         {
             _chainCounter = 0;
+            _chainTimer = 0.0f;
         }
-
-        Debug.Log(_chainCounter);
 
         if(_chainCounter == 0) { displayText.text = "Light Attack"; }
         else
@@ -76,6 +79,9 @@ public class AttackChaining : MonoBehaviour
         _attackTimer = 0.0f;
 
         _chainCounter++;
+        
+        // Reset the slider to the max time
+        attackMeter.SetSliderMax(chainTimeFrame);
     }
 
     void HeavyAttack()
