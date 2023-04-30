@@ -1,11 +1,18 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class AttackChaining : MonoBehaviour
 {
+    public Dictionary<string, Attack> Attacks;
+
     public AttackMeter attackMeter;
 
     public TMP_Text displayText;
+
+    public GameObject chainBar;
+    public GameObject fill;
 
     public float attackDelay = 0.5f;
     public bool attackReady = true;
@@ -16,9 +23,17 @@ public class AttackChaining : MonoBehaviour
     private const int _maxChain = 5;
     [SerializeField] private float _chainTimer = 0.0f;
 
+    private void Start()
+    {
+        Attacks.Add("Light Attack", new Attack("Light Attack", 0.5f, 1.5f));
+        
+    }
+
     private void Update()
     {
-        if(_attackTimer < attackDelay)
+        
+        //attack speed counter
+        if (_attackTimer < attackDelay)
         {
             _attackTimer += Time.deltaTime;
         }
@@ -43,11 +58,13 @@ public class AttackChaining : MonoBehaviour
         if(_chainCounter == 0 && attackReady)
         {
             displayText.text = "Idle";
-        }
+            chainBar.SetActive(false);
+        } 
+        else { chainBar.SetActive(true); }
 
         if(Input.GetKeyDown(KeyCode.R))
         {
-            LightAttack();
+            //LightAttack();
         }
 
         if(Input.GetKeyDown(KeyCode.T)) 
@@ -58,16 +75,30 @@ public class AttackChaining : MonoBehaviour
 
     void LightAttack()
     {
+
         if(!attackReady) { return; }
 
+        fill.GetComponent<Image>().color = Color.blue;
+        attackDelay = 0.5f;
+
         // When the last attack of the chain is reached, reset the counter and timer 
-        if(_chainCounter == _maxChain)
+        if (_chainCounter == _maxChain)
         {
             _chainCounter = 0;
             _chainTimer = 0.0f;
         }
 
-        if(_chainCounter == 0) { displayText.text = "Light Attack"; }
+        //stuff that affects the last attack
+        if (_chainCounter == _maxChain - 1) 
+        { 
+            fill.GetComponent<Image>().color = Color.red;
+            attackDelay = 1.7f;
+        }
+
+        if (_chainCounter == 0) 
+        { 
+            displayText.text = "Light Attack";
+        }
         else
         {
             displayText.text = $"Light Attack {_chainCounter}";
