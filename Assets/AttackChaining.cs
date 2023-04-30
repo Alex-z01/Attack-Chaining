@@ -23,9 +23,12 @@ public class AttackChaining : MonoBehaviour
     private const int _maxChain = 5;
     [SerializeField] private float _chainTimer = 0.0f;
 
+    public int _curr_Light = 0;
+    public int _curr_Heavy = 0;
+
     private void Start()
     {
-        Attacks.Add("Light Attack", new Attack("Light Attack", 0.5f, 1.5f));
+        //Attacks.Add("Light Attack", new Attack("Light Attack", 0.5f, 1.5f));
         
     }
 
@@ -52,6 +55,9 @@ public class AttackChaining : MonoBehaviour
             {
                 _chainTimer = 0.0f;
                 _chainCounter = 0;
+
+                _curr_Light = 0;
+                _curr_Heavy = 0;
             }
         }
 
@@ -64,7 +70,7 @@ public class AttackChaining : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.R))
         {
-            //LightAttack();
+            LightAttack();
         }
 
         if(Input.GetKeyDown(KeyCode.T)) 
@@ -86,6 +92,9 @@ public class AttackChaining : MonoBehaviour
         {
             _chainCounter = 0;
             _chainTimer = 0.0f;
+
+            _curr_Light = 0;
+            _curr_Heavy = 0;
         }
 
         //stuff that affects the last attack
@@ -94,14 +103,15 @@ public class AttackChaining : MonoBehaviour
             fill.GetComponent<Image>().color = Color.red;
             attackDelay = 1.7f;
         }
-
+        //first Light Attack
         if (_chainCounter == 0) 
         { 
             displayText.text = "Light Attack";
         }
+        //Sequential Light Attacks
         else
         {
-            displayText.text = $"Light Attack {_chainCounter}";
+            displayText.text = $"Light Attack {_chainCounter + 1}";
             _chainTimer = 0.0f;
         }
 
@@ -110,6 +120,9 @@ public class AttackChaining : MonoBehaviour
         _attackTimer = 0.0f;
 
         _chainCounter++;
+
+        _curr_Light++;
+        _curr_Heavy++;
         
         // Reset the slider to the max time
         attackMeter.SetSliderMax(chainTimeFrame);
